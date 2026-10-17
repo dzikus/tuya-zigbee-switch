@@ -119,6 +119,7 @@ void parse_config() {
     memcpy(basic_cluster.modelId + 1, zb_model, basic_cluster.modelId[0]);
 
     bool     has_dedicated_status_led = false;
+    bool     has_reset_button         = false;
     uint16_t debounce_ms = DEBOUNCE_DELAY_MS;
     char *   entry;
     for (entry = extract_next_entry(&cursor); *entry != '\0';
@@ -148,6 +149,7 @@ void parse_config() {
             buttons[buttons_cnt].debounce_delay_ms       = debounce_ms;
             buttons[buttons_cnt].on_long_press           = on_reset_clicked;
             buttons_cnt++;
+            has_reset_button = true;
         } else if (entry[0] == 'L') {
             hal_gpio_pin_t pin = hal_gpio_parse_pin(entry + 1);
             hal_gpio_init(pin, 0, HAL_GPIO_PULL_NONE);
@@ -321,6 +323,13 @@ void parse_config() {
 
             encoder_clusters_cnt++;
             encoders_cnt++;
+        }
+    }
+
+    // A device with a reset button does not reset on encoder switch multi-press
+    if (has_reset_button) {
+        for (int index = 0; index < encoders_cnt; index++) {
+            encoders[index].on_multi_press = NULL;
         }
     }
 

@@ -6154,7 +6154,7 @@ REMOTE_TUYA_SMART_KNOB:
   tuya_module: none
   mcu_family: Silabs
   mcu: EFR32MG21A020F768IM32
-  config_str: qja6nq5z;TS004F;LD0i;EA0uB0uA4u;BTA4;
+  config_str: qja6nq5z;TS004F;LD0i;EA0uB0uA4u;BTA4;BA3u;
   alt_config_str: null
   old_manufacturer_names: null
   old_zb_models: null

@@ -147,6 +147,50 @@ def test_multipress_reset_disabled_when_zero() -> None:
             )
 
 
+def _release_encoder_switch(device: Device, pin: str) -> None:
+    # The stub starts with the pin low; the pull-up keeps it high on hardware
+    device.set_gpio(pin, 1)
+    device.step_time(100)
+
+
+def _click_encoder_switch(device: Device, pin: str) -> None:
+    device.set_gpio(pin, 0)
+    device.step_time(100)
+    device.set_gpio(pin, 1)
+    device.step_time(100)
+
+
+def test_encoder_leaves_on_multipress() -> None:
+    with StubProc(device_config="A;B;EA0uA1uA2u;") as proc:
+        device = Device(proc)
+        assert device.status()["joined"] == str(HAL_ZIGBEE_NETWORK_JOINED)
+        _release_encoder_switch(device, "A2")
+
+        for _ in range(9):
+            _click_encoder_switch(device, "A2")
+        assert device.status()["joined"] == str(HAL_ZIGBEE_NETWORK_JOINED)
+
+        _click_encoder_switch(device, "A2")
+        assert device.status()["joined"] != str(HAL_ZIGBEE_NETWORK_JOINED)
+
+
+def test_encoder_multipress_does_not_leave_with_reset_button() -> None:
+    with StubProc(device_config="A;B;EA0uA1uA2u;BB0u;") as proc:
+        device = Device(proc)
+        assert device.status()["joined"] == str(HAL_ZIGBEE_NETWORK_JOINED)
+        _release_encoder_switch(device, "A2")
+
+        for i in range(1, 16):
+            _click_encoder_switch(device, "A2")
+            assert device.status()["joined"] == str(HAL_ZIGBEE_NETWORK_JOINED), (
+                f"Device unexpectedly reset after {i} presses"
+            )
+
+        device.press_button("B0")
+        device.step_time(3000)
+        assert device.status()["joined"] != str(HAL_ZIGBEE_NETWORK_JOINED)
+
+
 def test_leaves_on_onboard_button_long_press() -> None:
     with StubProc(device_config="A;B;BA0u;") as proc:
         device = Device(proc)
