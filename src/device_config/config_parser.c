@@ -302,7 +302,7 @@ void parse_config() {
             hal_gpio_pin_t  b_pin   = hal_gpio_parse_pin(entry + 4);
             hal_gpio_pull_t b_pull  = hal_gpio_parse_pull(entry + 6);
             hal_gpio_pin_t  sw_pin  = hal_gpio_parse_pin(entry + 7);
-            hal_gpio_pull_t sw_pull = hal_gpio_parse_pull(entry + 6);
+            hal_gpio_pull_t sw_pull = hal_gpio_parse_pull(entry + 9);
 
             encoders[encoders_cnt].pin_a = a_pin;
             hal_gpio_init(a_pin, 1, a_pull);

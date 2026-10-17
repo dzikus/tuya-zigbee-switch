@@ -14,6 +14,7 @@ typedef struct {
 
     step_command_handler_callback_t _callback;
     void *                          _callback_arg;
+    hal_task_t                      _flush_task;
 } step_command_handler_t;
 
 void new_step_command_handler(step_command_handler_t *);
